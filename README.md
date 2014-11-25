@@ -21,7 +21,7 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-use HealthRack, path: "/status" do
+class Health < HealthRack::Base
   check "Database" do
     # Add code to check connectivity to database
   end
@@ -30,9 +30,11 @@ use HealthRack, path: "/status" do
     true
   end
 end
+
+run Health.new
 ```
 
-Then simply visit the page (ie. `/status`) to view the output. By default the output will be in HTML but you can add the `.json` suffix to get a JSON output instead.
+Then simply visit the page to view the output. By default the output will be in HTML but you can add the `.json` suffix to get a JSON output instead.
 
 ## Contributing
 

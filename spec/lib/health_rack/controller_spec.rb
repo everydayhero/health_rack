@@ -1,13 +1,12 @@
 require "spec_helper"
 
 describe HealthRack::Controller do
-  let(:config){ HealthRack::Configuration.new }
+  let(:env){ Hash.new }
+  let(:controller){ HealthRack::Controller.new(env) }
 
   describe "responding" do
-    let(:controller){ HealthRack::Controller.new({}, config) }
-    let(:response){ controller.perform }
-    let(:headers){ response[1] }
-    let(:body){ response[2].body.join }
+    let(:app){ HealthRack::Base.new }
+    let(:response){ controller.perform(app) }
 
     it "should return a rack-compatible response" do
       expect(response[0]).to be_kind_of(Fixnum)
@@ -16,18 +15,15 @@ describe HealthRack::Controller do
     end
 
     it "should set the content header" do
-      expect(headers).to include("Content-type" => "text/html; charset=UTF-8")
+      expect(response[1]).to include("Content-type" => "text/html; charset=UTF-8")
     end
 
     it "should render to the body" do
-      expect(body).not_to be_empty
+      expect(response[2].body.join).not_to be_empty
     end
   end
 
   describe "the request's format when has an extension" do
-    let(:env){ Hash.new }
-    let(:controller){ HealthRack::Controller.new(env, config) }
-
     it "should return the extension" do
       env.update "PATH_INFO" => "/test.json"
       expect(controller.format).to eq('json')

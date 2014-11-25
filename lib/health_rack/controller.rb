@@ -4,15 +4,17 @@ require "rack/body_proxy"
 
 module HealthRack
   class Controller
-    def initialize(env, config)
-      @config = config
+    def initialize(env)
       @request = Rack::Request.new(env)
       @response = Rack::Response.new
     end
 
-    def perform
-      @response['Content-type'] = renderer.content_type
+    def perform(app)
+      renderer = renderer_class.new(app)
+
       renderer.render(@response)
+
+      @response['Content-type'] = renderer.content_type
       @response.finish
     end
 
@@ -25,8 +27,8 @@ module HealthRack
 
     private
 
-    def renderer
-      @renderer ||= Renderers.find(format).new(@config)
+    def renderer_class
+      @renderer_class ||= Renderers.find(format)
     end
   end
 end

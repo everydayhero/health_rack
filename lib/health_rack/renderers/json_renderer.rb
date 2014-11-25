@@ -5,8 +5,8 @@ module HealthRack
     class JSONRenderer
       CONTENT_TYPE = "application/json"
 
-      def initialize(config)
-        @config = config
+      def initialize(app)
+        @app = app
       end
 
       def content_type
@@ -25,20 +25,24 @@ module HealthRack
 
       def data
         {
-          title: @config.title,
+          title: @app.title,
           status: overall_status,
           summary: summary
         }
       end
 
       def overall_status
-        @config.checks.all?(&:status)
+        results.all?(&:status)
       end
 
       def summary
-        @config.checks.map do |check|
-          {title: check.title, status: check.status, duration: check.duration}
+        results.map do |result|
+          {title: result.title, status: result.status, duration: result.duration}
         end
+      end
+
+      def results
+        @results ||= @app.results
       end
     end
   end

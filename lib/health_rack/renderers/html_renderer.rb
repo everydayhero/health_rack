@@ -3,8 +3,8 @@ module HealthRack
     class HTMLRenderer
       CONTENT_TYPE = "text/html; charset=UTF-8"
 
-      def initialize(config)
-        @config = config
+      def initialize(app)
+        @app = app
       end
 
       def content_type
@@ -17,11 +17,11 @@ module HealthRack
         <html>
           <head>
             <meta charset="utf-8">
-            <title>#{@config.title}</title>
+            <title>#{@app.title}</title>
           </head>
           <body>
             <table border="1">
-              <caption>#{@config.title}</caption>
+              <caption>#{@app.title}</caption>
               <thead>
                 <tr>
                   <th>&nbsp;</th>
@@ -32,12 +32,12 @@ module HealthRack
               <tbody>
         HTML
 
-        @config.checks.each do |check|
+        results.each do |result|
           buffer.write <<-HTML
           <tr>
-            <th>#{check.title}</th>
-            <td>#{status(check)}</td>
-            <td>#{check.duration.to_f * 1000}</td>
+            <th>#{result.title}</th>
+            <td>#{status(result)}</td>
+            <td>#{result.duration.to_f * 1000}</td>
           </tr>
           HTML
         end
@@ -58,6 +58,10 @@ module HealthRack
           when check.status? then 'OK'
           else 'FAIL'
         end
+      end
+
+      def results
+        @results ||= @app.results
       end
     end
   end

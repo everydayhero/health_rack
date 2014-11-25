@@ -1,22 +1,24 @@
 require "spec_helper"
 
 describe HealthRack::Renderers::HTMLRenderer do
-  class Buffer < Array
-    alias_method :write, :push
+  let(:app) do
+    Class.new(HealthRack::Base) do
+      title "Test"
+      check("Foobar"){ true }
+    end.new
+  end
+  let(:buffer) do
+    Class.new(Array) do
+      alias_method :write, :push
 
-    def to_s
-      join(" ")
-    end
+      def to_s
+        join(" ")
+      end
+    end.new
   end
 
-  let(:check){ HealthRack::Check.new("Foobar"){ true } }
-  let(:config){ HealthRack::Configuration.new(title: "Test") }
-  let(:buffer){ Buffer.new }
-
   before(:each) do
-    check.perform
-    config.checks << check
-    HealthRack::Renderers::HTMLRenderer.new(config).render(buffer)
+    HealthRack::Renderers::HTMLRenderer.new(app).render(buffer)
   end
 
   describe "rendering" do
