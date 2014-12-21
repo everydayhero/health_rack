@@ -20,6 +20,8 @@ Or install it yourself as:
 
 ## Usage
 
+Add a class containing the various checks you would like to perform.
+
 ```ruby
 class Health < HealthRack::Base
   check "Database" do
@@ -34,7 +36,15 @@ end
 run Health.new
 ```
 
-Then simply visit the page to view the output. By default the output will be in HTML but you can add the `.json` suffix to get a JSON output instead.
+Then mount the health check in your routes
+
+```ruby
+mount HealthStatus.new, at: '/health'
+```
+
+Visiting that path in a browser will perform the health check and present the output.
+
+There is also the option of adding `.json` to the path to generate json output.
 
 ## Contributing
 
