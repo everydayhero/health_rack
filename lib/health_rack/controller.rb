@@ -1,3 +1,4 @@
+require "rack"
 require "rack/request"
 require "rack/response"
 require "rack/body_proxy"
